@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla de Usuarios</title>
+    <link rel="stylesheet" href="./styles/lista.css">
+</head>
+
+<body>
+
+    <div class="search-container">
+        <form id="search-form" class="search-form">
+            <input type="text" id="search-input" placeholder="Buscar usuario...">
+            <button type="submit" id="btn_submit">Buscar</button>
+        </form>
+    </div>
+    <p id="error-message" class="error-message" style="display: none;"></p>
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Usuario</th>
+                <th>Bloqueado</th>
+                <th>Apellido</th>
+                <th>Nombre</th>
+                <th>Bloquear</th>
+                <th>Desbloquear</th>
+            </tr>
+        </thead>
+        <tbody id="tbody">
+           
+        </tbody>
+    </table>
+
+    <script src="./scripts/lista.js"></script>
+
+</body>
+
+</html>
