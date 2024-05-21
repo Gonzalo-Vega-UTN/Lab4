@@ -22,3 +22,6 @@ coverage/
 
 # Vite
 dist/
+
+#Custom
+Lab4TPS/
