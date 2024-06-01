@@ -1,0 +1,23 @@
+[
+	{
+		"id": 1,
+		"denominacion": "Cuerda"
+	},
+	{
+		"id": 2,
+		"denominacion": "Viento"
+	},
+	{
+		"id": 3,
+		"denominacion": "Percusion"
+	},
+	{
+		"id": 4,
+		"denominacion": "Teclado"
+	},
+	{
+		"id": 5,
+		"denominacion": "Electronico"
+	}
+
+]
