@@ -1,0 +1,18 @@
+.carousel-container {
+    display: flex; 
+    justify-content: center; 
+    margin: 0 auto; 
+    height: 400px;
+   
+  }
+  
+.carousel_item{
+    width: 100%;
+    height: 400px;
+}
+
+img {
+    width: 100%;
+    height: 400px;
+    object-fit: contain;
+  }
