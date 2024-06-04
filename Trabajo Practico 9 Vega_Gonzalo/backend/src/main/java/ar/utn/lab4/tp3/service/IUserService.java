@@ -6,5 +6,7 @@ public interface IUserService {
     MyUser login(MyUser myUser);
     MyUser save(MyUser myUser);
 
+    MyUser getUser(Long id);
+
     MyUser updateRole(MyUser admin, String email);
 }

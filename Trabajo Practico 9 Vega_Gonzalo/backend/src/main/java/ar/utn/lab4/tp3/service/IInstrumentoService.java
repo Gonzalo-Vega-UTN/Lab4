@@ -9,6 +9,7 @@ import java.util.List;
 public interface IInstrumentoService {
 
     InstrumentoDto getById(Long id);
+    Instrumento getInstrumento(Long id);
     List<InstrumentoDto> getAll();
     void saveAll(List<Instrumento> instrumentos);
     void save(InstrumentoReqDto instrumentoReqDto);

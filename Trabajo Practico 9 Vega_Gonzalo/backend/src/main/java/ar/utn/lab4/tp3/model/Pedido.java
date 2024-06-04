@@ -24,6 +24,11 @@ public class Pedido {
     LocalDate fechaPedido;
 
     Double totalPedido;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    MyUser user;
+    
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     List<PedidoDetalle> pedidoDetalles;
 }

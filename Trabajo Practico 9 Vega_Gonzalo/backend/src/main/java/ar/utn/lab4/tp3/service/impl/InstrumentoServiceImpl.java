@@ -2,6 +2,7 @@ package ar.utn.lab4.tp3.service.impl;
 
 import ar.utn.lab4.tp3.dto.InstrumentoDto;
 import ar.utn.lab4.tp3.dto.request.InstrumentoReqDto;
+import ar.utn.lab4.tp3.exception.NotFoundException;
 import ar.utn.lab4.tp3.model.CategoriaInstrumento;
 import ar.utn.lab4.tp3.model.Instrumento;
 import ar.utn.lab4.tp3.repository.ICategoriaRepository;
@@ -25,8 +26,7 @@ public class InstrumentoServiceImpl implements IInstrumentoService {
 
     @Override
     public InstrumentoDto getById(Long id) {
-        return mapper.convertValue(this.instrumentoRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("No se encuentra el instrumeto")),
+        return mapper.convertValue(getInstrumento(id),
                 InstrumentoDto.class);
     }
 
@@ -82,5 +82,12 @@ public class InstrumentoServiceImpl implements IInstrumentoService {
         instrumento.setCategoriaInstrumento(null);
         
         this.instrumentoRepository.delete(instrumento);
+    }
+
+    @Override
+    public Instrumento getInstrumento(Long id) {
+        System.out.println("INSTURMENTO ID " + id);
+        return this.instrumentoRepository.findById(id).orElseThrow(()
+                -> new NotFoundException("No se encuentra el instrumeto"));
     }
 }

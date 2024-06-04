@@ -1,6 +1,7 @@
 package ar.utn.lab4.tp3.service.impl;
 
-import ar.utn.lab4.tp3.dto.request.PedidoDetalleReqDto;
+import ar.utn.lab4.tp3.dto.PedidoDetalleResp;
+import ar.utn.lab4.tp3.dto.PedidoResp;
 import ar.utn.lab4.tp3.dto.request.PedidoReqDto;
 import ar.utn.lab4.tp3.model.Pedido;
 import ar.utn.lab4.tp3.model.PedidoDetalle;
@@ -8,8 +9,11 @@ import ar.utn.lab4.tp3.model.PreferenceMP;
 import ar.utn.lab4.tp3.repository.IInstrumentoRepository;
 import ar.utn.lab4.tp3.repository.IPedidoRepository;
 import ar.utn.lab4.tp3.repository.IPreferenceMP;
+import ar.utn.lab4.tp3.repository.IUserRepository;
+import ar.utn.lab4.tp3.service.IInstrumentoService;
 import ar.utn.lab4.tp3.service.IPedidoService;
-import com.fasterxml.jackson.databind.DeserializationFeature;
+import ar.utn.lab4.tp3.service.IUserService;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.preference.PreferenceBackUrlsRequest;
@@ -18,69 +22,88 @@ import com.mercadopago.client.preference.PreferenceItemRequest;
 import com.mercadopago.client.preference.PreferenceRequest;
 import com.mercadopago.resources.preference.Preference;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 @Service
 public class PedidoServiceImpl implements IPedidoService {
     private IPedidoRepository pedidoRepository;
     private IInstrumentoRepository instrumentoRepository;
+    private final IInstrumentoService instrumentoService;
     private final IPreferenceMP preferenceRepository;
+    private final IUserService userService;
     private ObjectMapper mapper;
 
-    public PedidoServiceImpl(IPedidoRepository pedidoRepository, IInstrumentoRepository instrumentoRepository, IPreferenceMP preferenceRepository) {
+    public PedidoServiceImpl(IPedidoRepository pedidoRepository, IInstrumentoRepository instrumentoRepository,
+            IPreferenceMP preferenceRepository, UserServiceImpl userService,
+            InstrumentoServiceImpl instrumentoService) {
         this.pedidoRepository = pedidoRepository;
         this.instrumentoRepository = instrumentoRepository;
         this.preferenceRepository = preferenceRepository;
+        this.userService = userService;
+        this.instrumentoService = instrumentoService;
         mapper = new ObjectMapper();
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     @Override
     public void delete(Long id) {
         var pedido = this.pedidoRepository.findById(id);
-        if(pedido.isEmpty()){
+        if (pedido.isEmpty()) {
             throw new RuntimeException("Pedido no encontrado");
         }
         this.pedidoRepository.delete(pedido.get());
     }
 
-    @Override
-    public PedidoReqDto create(PedidoReqDto request) {
-        Pedido pedido = mapper.convertValue(request, Pedido.class);
-        LocalDate localDate = LocalDate.parse(request.getFechaPedidoString());
-        pedido.setFechaPedido(localDate);
-        System.out.println();
-        for (PedidoDetalle detalle : pedido.getPedidoDetalles()) {
-            detalle.setPedido(pedido);
-            detalle.setInstrumento(this.instrumentoRepository.findById(detalle.getInstrumento().getId()).get());
+    @Override 
+    public PedidoResp create(PedidoReqDto request) {
+        System.out.println(request.getFechaPedido());
+        final Pedido pedido = Pedido.builder()
+                .fechaPedido(request.getFechaPedido())
+                .id(null)
+                .totalPedido(request.getTotalPedido())
+                .user(this.userService.getUser(request.getUserId()))
+                .fechaPedido(request.getFechaPedido())
+                .build();
+        pedido.getUser().getPedidos().add(pedido);
+        request.getPedidoDetalles().forEach(detalle -> System.out.println(detalle.getId()));
+        List<PedidoDetalle> detalles = request.getPedidoDetalles().stream().map(detalle -> PedidoDetalle.builder()
+                .cantidad(detalle.getCantidad())
+                .id(null)
+                .instrumento(this.instrumentoService.getInstrumento(detalle.getInstrumentoId()))
+                .pedido(pedido)
+                .build()).toList();
+        detalles.forEach(detalle -> System.out.println(detalle.getInstrumento().getId()));
+        pedido.setPedidoDetalles(detalles);
+        Pedido savedPedido = this.pedidoRepository.save(pedido);
+        return convertToPedidoResponse(savedPedido);
     }
 
-       pedido = this.pedidoRepository.save(pedido);
-        PedidoReqDto response = PedidoReqDto.builder()
-                .id(pedido.getId())
-                .totalPedido(pedido.getTotalPedido())
-                .fechaPedidoString(pedido.getFechaPedido().toString())
-                .pedidoDetalles(new HashSet<>())
-                .build();
-        pedido.getPedidoDetalles().forEach(pedidoDetalle -> response.getPedidoDetalles().add(mapper.convertValue(pedidoDetalle, PedidoDetalleReqDto.class )));
+    private PedidoResp convertToPedidoResponse(Pedido p) {
+        PedidoResp response = PedidoResp.builder()
+             .id(p.getId())
+             .fechaPedido(p.getFechaPedido())
+             .totalPedido(p.getTotalPedido())
+             .userId(p.getUser().getId())
+             .pedidoDetalles(p.getPedidoDetalles().stream().map(detalle -> PedidoDetalleResp.builder()
+                     .id(detalle.getId())
+                     .cantidad(detalle.getCantidad())
+                     .instrumento(detalle.getInstrumento())
+                     .build()).toList())
+             .build();
+
         return response;
     }
 
     @Override
     public List<PedidoReqDto> getAll() {
-        return null;
+        return this.pedidoRepository.findAll().stream().map(pedido -> mapper.convertValue(pedido, PedidoReqDto.class))
+                .toList();
     }
 
     @Override
     public PreferenceMP createPreference(PedidoReqDto pedidoReqDto) {
         Pedido pedido = mapper.convertValue(pedidoReqDto, Pedido.class);
-        LocalDate localDate = LocalDate.parse(pedidoReqDto.getFechaPedidoString());
-        pedido.setFechaPedido(localDate);
         try {
             MercadoPagoConfig.setAccessToken("TEST-4958988049688747-052018-164480fcc3cbd0aeef414a5b009682c1-227628785");
             PreferenceItemRequest itemRequest = PreferenceItemRequest.builder()
@@ -95,7 +118,8 @@ public class PedidoServiceImpl implements IPedidoService {
             List<PreferenceItemRequest> items = new ArrayList<>();
             items.add(itemRequest);
 
-            PreferenceBackUrlsRequest backURL = PreferenceBackUrlsRequest.builder().success("http://localhost:5173/mpsuccess")
+            PreferenceBackUrlsRequest backURL = PreferenceBackUrlsRequest.builder()
+                    .success("http://localhost:5173/mpsuccess")
                     .pending("http://localhost:5173/mppending").failure("http://localhost:5173/mpfailure").build();
 
             PreferenceRequest preferenceRequest = PreferenceRequest.builder()
@@ -110,7 +134,7 @@ public class PedidoServiceImpl implements IPedidoService {
             mpPreference.setId(preference.getId());
             this.preferenceRepository.save(mpPreference);
             return mpPreference;
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             return null;

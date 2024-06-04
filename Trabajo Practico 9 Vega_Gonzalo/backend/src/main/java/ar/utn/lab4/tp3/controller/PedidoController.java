@@ -19,8 +19,6 @@ public class PedidoController {
 
     @PostMapping("")
     public ResponseEntity<?> delete(@RequestBody PedidoReqDto reques){
-        System.out.println("EN CONTROLER");
-        System.out.println(reques);
         return ResponseEntity.ok().body(pedidoService.create(reques));
     }
     @DeleteMapping("/{idPedido}")

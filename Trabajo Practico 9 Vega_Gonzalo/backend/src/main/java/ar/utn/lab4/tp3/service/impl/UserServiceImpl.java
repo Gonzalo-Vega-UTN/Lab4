@@ -5,6 +5,7 @@ import ar.utn.lab4.tp3.model.Role;
 import ar.utn.lab4.tp3.repository.IUserRepository;
 import ar.utn.lab4.tp3.service.IUserService;
 import org.springframework.stereotype.Service;
+import ar.utn.lab4.tp3.exception.NotFoundException;
 
 import java.util.List;
 
@@ -50,5 +51,10 @@ public class UserServiceImpl implements IUserService {
 
     public void saveAll(List<MyUser> dataList) {
         dataList.forEach(this.userRepository::save);
+    }
+
+    @Override
+    public MyUser getUser(Long id) {
+       return this.userRepository.findById(id).orElseThrow(() -> new NotFoundException("Usuario Invalido"));
     }
 }

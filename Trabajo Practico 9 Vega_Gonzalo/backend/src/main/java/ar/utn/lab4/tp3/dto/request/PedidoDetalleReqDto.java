@@ -14,6 +14,6 @@ import lombok.experimental.FieldDefaults;
 public class PedidoDetalleReqDto {
     Integer id;
     Integer cantidad;
-    InstrumentoDto instrumento;
+    Long instrumentoId;
 
 }
