@@ -6,9 +6,13 @@ import { useNavigate } from "react-router-dom";
 import MyAlert from "../components/MyAlert";
 import { useAuth } from "../context/AuthContext";
 import User from "../entities/User";
+import ReporteService from "../services/ReporteService";
 
 const GestionInstrumentos = () => {
-  const [instrumentos, setInstrumentos] = useState<Instrumento[]>([])
+  const [instrumentos, setInstrumentos] = useState<Instrumento[]>([]);
+  const [desdeFecha, setDesdeFecha] = useState("");
+  const [hastaFecha, setHastaFecha] = useState("");
+  const [errorExcel, setErrorExcel] = useState("");
   const { jsonUsuario } = useAuth();
   const usuarioLogueado: User | null = jsonUsuario ? JSON.parse(jsonUsuario) as User : null;
 
@@ -53,15 +57,43 @@ const GestionInstrumentos = () => {
     setShowConfirmationAlertId(null);
   };
 
-  const handleClickGenerarPdf = () =>{
-    
+  const handleClickGenerarPdf = async () => {
+    if (!desdeFecha) {
+      setErrorExcel("Elije una fecha desde")
+      return;
+    }
+    if (!hastaFecha) {
+      setErrorExcel("Elije una fecha hasta")
+      return;
+    }
+
+    try {
+      const excelData = await ReporteService.generateExcelReport(desdeFecha, hastaFecha);
+      const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = window.URL.createObjectURL(blob);
+      window.open(url);
+      //navigate("")
+    } catch (error) {
+      console.error('Error al generar el Excel:', error);
+      if (error instanceof Error) {
+        setErrorExcel(error.message);
+      } else {
+        setErrorExcel('Hubo un error');
+      }
+    }
+
   }
   return (
     <>
       <h1 className="display-2">Gestion Instrumentos</h1>
       <div>
         <Button className="p-3 mb-3 mx-1" style={{ fontSize: '1.2em', fontWeight: 'bold' }} onClick={() => handleClickModificar("0")}>Crear</Button>
-        <Button variant="warning" className="p-3 mb-3 mx-1" style={{ fontSize: '1.2em', fontWeight: 'bold' }} onClick={() => handleClickGenerarPdf()}>Generar Pdf</Button>
+        <div>
+          <Button variant="warning" className="p-3 mb-3 mx-1" style={{ fontSize: '1.2em', fontWeight: 'bold' }} onClick={() => handleClickGenerarPdf()}>Generar Excel</Button>
+          <label className="mx-2" htmlFor="desde">Desde: <input type="date" value={desdeFecha} onChange={(e) => setDesdeFecha(e.target.value)}></input></label>
+          <label className="mx-2" htmlFor="">Hasta: <input type="date" value={hastaFecha} onChange={(e) => setHastaFecha(e.target.value)}></input></label>
+          {errorExcel && <span className="text-danger mx-2">{errorExcel}</span>}
+        </div>
       </div>
 
       <table className="table">

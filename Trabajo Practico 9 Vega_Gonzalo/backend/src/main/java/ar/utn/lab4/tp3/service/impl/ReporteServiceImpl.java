@@ -1,5 +1,6 @@
 package ar.utn.lab4.tp3.service.impl;
 
+import ar.utn.lab4.tp3.exception.NotFoundException;
 import ar.utn.lab4.tp3.model.Pedido;
 import ar.utn.lab4.tp3.model.PedidoDetalle;
 import com.lowagie.text.Font;
@@ -7,8 +8,7 @@ import com.lowagie.text.FontFactory;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -33,10 +33,10 @@ public class ReporteServiceImpl {
 
     /*EXEL*/
     private  ByteArrayInputStream generateExcelReport(List<Pedido> pedidos) throws IOException {
-        try (Workbook workbook = new XSSFWorkbook()) {
+        try (Workbook workbook = new SXSSFWorkbook(50)) {
             Sheet sheet = workbook.createSheet("Pedidos");
             createHeaderRow(sheet);
-            int rowNum = 1;
+            int rowNum = 1; //Avanzamos a la segunda fila porque la primera ya tiene el header
             for (Pedido pedido : pedidos) {
                 createPedidoRows(pedido, sheet, rowNum);
                 rowNum += pedido.getPedidoDetalles().size();
@@ -47,68 +47,37 @@ public class ReporteServiceImpl {
         }
     }
 
-    private static void createHeaderRow(Sheet sheet) {
+    private void createHeaderRow(Sheet sheet) {
         Row headerRow = sheet.createRow(0);
-        headerRow.createCell(0).setCellValue("ID");
-        headerRow.createCell(1).setCellValue("Fecha Pedido");
-        headerRow.createCell(2).setCellValue("Instrumento");
-        headerRow.createCell(3).setCellValue("Marca");
-        headerRow.createCell(4).setCellValue("Modelo");
-        headerRow.createCell(5).setCellValue("Cantidad");
-        headerRow.createCell(6).setCellValue("Precio");
-        headerRow.createCell(7).setCellValue("Costo de Envío");
-        headerRow.createCell(8).setCellValue("SubTotal");
-        headerRow.createCell(9).setCellValue("Total");
+        List<String> headers = List.of("ID", "Fecha Pedido", "Instrumento", "Marca", "Modelo", "Precio", "Cantidad", "Costo de Envío", "Subtotal", "Total");
+        for (int column = 0; column < headers.size(); column++) {
+            headerRow.createCell(column).setCellValue(headers.get(column));
+        }
+
     }
 
-    public static void createPedidoRows(Pedido pedido, Sheet sheet, int rowIndex) {
-        int mergedRows = pedido.getPedidoDetalles().size();
+    private void createPedidoRows(Pedido pedido, Sheet sheet, int rowIndex) {
+       int row2 = rowIndex;
+       Double total = 0.0;
+        for (PedidoDetalle pedidoDetalle : pedido.getPedidoDetalles()){
+            Row row = sheet.createRow(row2);
+            row.createCell(0).setCellValue(pedido.getId());
+            row.createCell(1).setCellValue(pedido.getFechaPedido().toString());
+            double costoEnvio = pedidoDetalle.getInstrumento().getCostoEnvio().equals("G") ? 0.0 : Double.parseDouble(pedidoDetalle.getInstrumento().getCostoEnvio());
+            double subTotal = pedidoDetalle.getCantidad() * Double.parseDouble(pedidoDetalle.getInstrumento().getPrecio());
+            row.createCell(2).setCellValue(pedidoDetalle.getInstrumento().getInstrumento());
+            row.createCell(3).setCellValue(pedidoDetalle.getInstrumento().getMarca());
+            row.createCell(4).setCellValue(pedidoDetalle.getInstrumento().getModelo());
+            row.createCell(5).setCellValue(pedidoDetalle.getInstrumento().getPrecio());
+            row.createCell(6).setCellValue(pedidoDetalle.getCantidad());
+            row.createCell(7).setCellValue(String.valueOf(costoEnvio));
+            row.createCell(8).setCellValue(String.valueOf(subTotal));
+            row.createCell(9).setCellValue(String.valueOf(pedido.getTotalPedido() ));
+            row2++;
 
-        // Crear todas las filas necesarias
-        for (int i = 0; i < mergedRows; i++) {
-            Row row = sheet.createRow(rowIndex + i);
-            if (i == 0) {
-                row.createCell(0).setCellValue(pedido.getId());
-                row.createCell(1).setCellValue(pedido.getFechaPedido().toString());
-                row.createCell(10).setCellValue(pedido.getTotalPedido());
-            } else {
-                // Si no es la primera fila, solo creamos celdas en las columnas restantes
-                for (int j = 0; j <= 10; j++) {
-                    row.createCell(j);
-                }
-            }
-            PedidoDetalle detalle = pedido.getPedidoDetalles().get(i);
-            row.createCell(3).setCellValue(detalle.getInstrumento().getInstrumento());
-            row.createCell(4).setCellValue(detalle.getInstrumento().getMarca());
-            row.createCell(5).setCellValue(detalle.getInstrumento().getModelo());
-            row.createCell(6).setCellValue(Double.parseDouble(detalle.getInstrumento().getPrecio()));
-
-            String costoEnvioStr = detalle.getInstrumento().getCostoEnvio();
-            double costoEnvio = 0.0;
-            try {
-                costoEnvio = Double.parseDouble(costoEnvioStr);
-            } catch (NumberFormatException e) {
-                // El valor del costo de envío no es numérico, se asume 'G'
-            }
-            row.createCell(7).setCellValue(costoEnvio);
-            row.createCell(8).setCellValue(detalle.getCantidad());
-
-            double subtotal = detalle.getCantidad() * Double.parseDouble(detalle.getInstrumento().getPrecio());
-            if (!"G".equals(costoEnvioStr)) {
-                subtotal += costoEnvio;
-            }
-            row.createCell(9).setCellValue(subtotal);
         }
 
-        // Combinar celdas de las columnas de ID, Fecha Pedido, Título y Total
-        if (mergedRows > 1) {
-            CellRangeAddress mergedCell = new CellRangeAddress(rowIndex, rowIndex + mergedRows - 1, 0, 0); // ID
-            sheet.addMergedRegion(mergedCell);
-            mergedCell = new CellRangeAddress(rowIndex, rowIndex + mergedRows - 1, 1, 1); // Fecha Pedido
-            sheet.addMergedRegion(mergedCell);
-            mergedCell = new CellRangeAddress(rowIndex, rowIndex + mergedRows - 1, 10, 10); // Total
-            sheet.addMergedRegion(mergedCell);
-        }
+
     }
 //
 //
@@ -239,11 +208,12 @@ public class ReporteServiceImpl {
 
     public ByteArrayInputStream obtenerExcelPedidosPorRangoFechas(LocalDate desde, LocalDate hasta) {
         List<Pedido> pedidos = this.pedidoService.obtenerPedidosPorFecha(desde, hasta);
+        if(pedidos.isEmpty()) throw new NotFoundException("No hay pedidos en esas fechas");
         try {
             return generateExcelReport(pedidos);
         } catch (IOException e) {
             System.out.println(e.getMessage());
-            throw new RuntimeException(e);
+            throw new NotFoundException("Hubo un Error!");
         }
 
     }

@@ -14,8 +14,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/api/reportes")
+@CrossOrigin(origins = "*")
 public class ReportesController {
 
     private ReporteServiceImpl reporteService;

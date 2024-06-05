@@ -24,10 +24,8 @@ public class InstrumentoController {
             @RequestParam("email") Optional<String> email) {
         List<InstrumentoDto> instrumentos;
         if (email.isPresent()) {
-            System.out.println("Fetching all instruments for admin: " + email.get());
             instrumentos = instrumentoService.getAll(email.get());
         } else {
-            System.out.println("Fetching instruments with 'alta' status");
             instrumentos = instrumentoService.getAllAltaTrue();
         }
         return ResponseEntity.ok().body(instrumentos);

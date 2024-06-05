@@ -42,12 +42,12 @@ VALUES
 INSERT INTO PUBLIC.INSTRUMENTO 
 (ALTA, CANTIDAD_VENDIDA, CATEGORIA_INSTRUMENTO, INSTRUMENTO, DESCRIPCION, IMAGEN, MARCA, MODELO, COSTO_ENVIO, PRECIO)
 VALUES 
-(TRUE, 5, 1, 'Guitarra Ukelele Infantil Grande 60cm', 'Material: Plástico smil madera 4 Cuerdas longitud: 60cm, el mejor regalo para usted, su familia y amigos, adecuado para 3-18 años de edad', 'nro4.jpg', 'GUITARRA', 'UKELELE', 'GRATIS', '500');
+(TRUE, 5, 1, 'Guitarra Ukelele Infantil Grande 60cm', 'Material: Plástico smil madera 4 Cuerdas longitud: 60cm, el mejor regalo para usted, su familia y amigos, adecuado para 3-18 años de edad', 'nro4.jpg', 'GUITARRA', 'UKELELE', 'G', '500');
 
 INSERT INTO PUBLIC.INSTRUMENTO 
 (ALTA, CANTIDAD_VENDIDA, CATEGORIA_INSTRUMENTO, INSTRUMENTO, DESCRIPCION, IMAGEN, MARCA, MODELO, COSTO_ENVIO, PRECIO)
 VALUES 
-(TRUE, 137, 5, 'Teclado Organo Electronico Musical Instrumento 54 Teclas ', 'Organo Electrónico GADNIC T01. Display de Led. 54 Teclas. 100 Timbres / 100 Ritmos. 4 1/2 octavas. 8 Percusiones. 8 Canciones de muestra. Grabación y reproducción. Entrada para Micrófono. Salida de Audio (Auriculares / Amplificador). Vibrato. Sustain Incluye Atril Apoya partitura y Micrófono. Dimensiones: 84,5 x 32,5 x 11 cm', 'nro2.jpg', 'GADNIC', 'T01', 'GRATIS', '2250');
+(TRUE, 137, 5, 'Teclado Organo Electronico Musical Instrumento 54 Teclas ', 'Organo Electrónico GADNIC T01. Display de Led. 54 Teclas. 100 Timbres / 100 Ritmos. 4 1/2 octavas. 8 Percusiones. 8 Canciones de muestra. Grabación y reproducción. Entrada para Micrófono. Salida de Audio (Auriculares / Amplificador). Vibrato. Sustain Incluye Atril Apoya partitura y Micrófono. Dimensiones: 84,5 x 32,5 x 11 cm', 'nro2.jpg', 'GADNIC', 'T01', 'G', '2250');
 
 INSERT INTO PUBLIC.INSTRUMENTO 
 (ALTA, CANTIDAD_VENDIDA, CATEGORIA_INSTRUMENTO, INSTRUMENTO, DESCRIPCION, IMAGEN, MARCA, MODELO, COSTO_ENVIO, PRECIO)
