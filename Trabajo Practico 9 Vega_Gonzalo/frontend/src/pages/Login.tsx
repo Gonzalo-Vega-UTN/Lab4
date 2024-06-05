@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
 const Login: React.FC = () => {
     const navigate = useNavigate();
     const { login } = useAuth();
-    const [user, setUser] = useState<User>({ email: '', password: '', fullName: '', role: null });
+    const [user, setUser] = useState<User>({id: null,  email: '', password: '', fullName: '', role: null });
     const [validationMessage, setValidationMessage] = useState<string>('');
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,7 +40,12 @@ const Login: React.FC = () => {
                 },
             });
         } catch (error) {
-            setValidationMessage('Usuario y/o clave incorrectas');
+            if (error instanceof Error) {
+                setValidationMessage(error.message);
+            } else {
+                setValidationMessage('Hubo un error');
+            }
+
         }
     };
 

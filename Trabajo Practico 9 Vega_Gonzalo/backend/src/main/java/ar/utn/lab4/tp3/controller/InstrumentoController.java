@@ -1,12 +1,14 @@
 package ar.utn.lab4.tp3.controller;
 
 import ar.utn.lab4.tp3.dto.InstrumentoDto;
-import ar.utn.lab4.tp3.dto.request.InstrumentoReqDto;
 import ar.utn.lab4.tp3.service.IInstrumentoService;
 import ar.utn.lab4.tp3.service.impl.InstrumentoServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/instrumentos")
@@ -18,8 +20,17 @@ public class InstrumentoController {
     }
 
     @GetMapping("")
-    public ResponseEntity<?> getAll(){
-        return ResponseEntity.ok().body(instrumentoService.getAll());
+    public ResponseEntity<?> getAll(
+            @RequestParam("email") Optional<String> email) {
+        List<InstrumentoDto> instrumentos;
+        if (email.isPresent()) {
+            System.out.println("Fetching all instruments for admin: " + email.get());
+            instrumentos = instrumentoService.getAll(email.get());
+        } else {
+            System.out.println("Fetching instruments with 'alta' status");
+            instrumentos = instrumentoService.getAllAltaTrue();
+        }
+        return ResponseEntity.ok().body(instrumentos);
     }
     @DeleteMapping("/{idInstrumento}")
     public ResponseEntity<?> delete(@PathVariable("idInstrumento") Long id){
@@ -37,9 +48,8 @@ public class InstrumentoController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> create(@RequestBody InstrumentoReqDto instrumentoReqDto){
-
-        instrumentoService.save(instrumentoReqDto);
+    public ResponseEntity<?> create(@RequestBody InstrumentoDto instrumentoDto){
+        instrumentoService.save(instrumentoDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

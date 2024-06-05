@@ -5,16 +5,17 @@ interface MyAlertProps {
   show: boolean;
   handleClose: () => void;
   handleConfirm: () => void;
+  message? : string;
 }
 
-const MyAlert: React.FC<MyAlertProps> = ({ show, handleClose, handleConfirm }) => {
+const MyAlert: React.FC<MyAlertProps> = ({ show, handleClose, handleConfirm, message = "¿Desear continuar?" }) => {
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>Confirmación Requerida</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        Desea Eliminar el siguiente instrumento? 
+        {message}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>

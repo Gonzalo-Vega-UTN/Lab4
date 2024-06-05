@@ -14,6 +14,7 @@ import lombok.experimental.FieldDefaults;
 public class InstrumentoDto {
 
     Long id;
+    boolean alta;
     String instrumento;
     String marca;
     String modelo;

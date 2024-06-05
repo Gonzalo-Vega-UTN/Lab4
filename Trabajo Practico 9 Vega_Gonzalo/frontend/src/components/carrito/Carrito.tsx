@@ -7,25 +7,54 @@ import { PedidoDetalle } from '../../entities/PedidoDetalle';
 import { useNavigate } from 'react-router-dom';
 import CheckoutMP from './CheckoutMP';
 import { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import User from '../../entities/User';
 
 export function Carrito() {
   const { cart, limpiarCarrito, totalPedido } = useCarrito();
   const [idPreference, setIdPreference] = useState<string>('');
+  const { jsonUsuario } = useAuth();
+  const usuarioLogueado: User | null = jsonUsuario ? JSON.parse(jsonUsuario) as User : null;
 
   const navigate = useNavigate();
 
+  function formatDateToDDMMYYYY(dateString: string) {
+    const [year, month, day] = dateString.split('-');
+    return `${day}-${month}-${year}`;
+  }
+
   const handleSave = async () => {
     const total = calculateTotal();
+
+    if (!usuarioLogueado || usuarioLogueado === null || usuarioLogueado.id === null) {
+      navigate("/login")
+      return
+    }
     if (total > 0) {
       const pedido: Pedido = {
         id: -1,
-        fechaPedidoString: new Date().toISOString().slice(0, 10),
+        fechaPedido: formatDateToDDMMYYYY(new Date().toISOString().slice(0, 10)),
         totalPedido: total,
-        pedidoDetalles: cart
+        pedidoDetalles: cart,
+        userId: usuarioLogueado.id
       };
       console.log("ANTES DE ENVIAR", pedido);
-      
-      await Promise.all([savePedido(pedido), getPreferenceMP(pedido)]);
+      const response = await savePedido(pedido)
+      console.log("RESPONSE PEDIDO", response);
+
+      if (!response || response === null) {
+        alert("hubo un problema")
+        return;
+      }
+      console.log("AAAAAAAAAA");
+
+      const responseMP = await getPreferenceMP(pedido)
+      console.log("RESPONSE MP", responseMP);
+      if (responseMP) {
+        window.location.href = `https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=${responseMP.id}`;
+
+      }
+
     } else {
       alert("Agregue al menos un Instrumento al carrito");
     }
@@ -34,7 +63,6 @@ export function Carrito() {
   const calculateTotal = () => {
     const total = cart.reduce((acc: number, item: PedidoDetalle) => {
       let subtotal = item.cantidad * Number(item.instrumento.precio);
-
       if (item.instrumento.costoEnvio !== "G") {
         subtotal += Number(item.instrumento.costoEnvio);
       }
@@ -49,6 +77,7 @@ export function Carrito() {
       const response = await createPreferenceMP(pedido);
       console.log("Preference id: " + response.id);
       if (response) setIdPreference(response.id);
+      return response;
     } else {
       alert("Agregue al menos un Instrumento al carrito");
     }
@@ -75,13 +104,13 @@ export function Carrito() {
           </aside>
         </Row>
         <Row>
-          {totalPedido == 0 ? "" : <p>$ {totalPedido}</p>}
+          {totalPedido == 0 ? "" : <p>Total con Envío: $ {totalPedido}</p>}
         </Row>
         <Row className='mt-3'>
           <Col><Button className='' variant='secondary' onClick={limpiarCarrito} title='Limpiar Todo'>Limpiar</Button></Col>
           <Col><Button onClick={handleSave}>Comprar</Button></Col>
         </Row>
-        {idPreference && <CheckoutMP idPreference={idPreference}></CheckoutMP>}
+        {idPreference && <CheckoutMP preferenceId={idPreference}></CheckoutMP>}
       </Container>
     </>
   );

@@ -51,7 +51,7 @@ function DetalleInstrumento() {
 
   const renderImage = () => {
     if (instrumento) {
-      if (instrumento.imagen.includes("www")) {
+      if (instrumento.imagen.includes("www") || instrumento.imagen.includes("http") ) {
         return <img src={instrumento.imagen} className="card-img" alt="Instrumento" />;
       } else {
         return <img src={`/img/${instrumento.imagen}`} className="card-img" alt="Instrumento" />;

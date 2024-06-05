@@ -28,7 +28,6 @@ public class Data {
     private UserServiceImpl userService;
 
 
-    @PostConstruct
     public void populateCategoriast() throws IOException {
         InputStream inputStream = Data.class.getResourceAsStream("/categorias.json");
         if (inputStream == null) {
@@ -38,8 +37,8 @@ public class Data {
         List<CategoriaInstrumento> dataList = objectMapper.readValue(inputStream,
                 objectMapper.getTypeFactory().constructCollectionType(List.class, CategoriaInstrumento.class));
         categoriaService.saveAll(dataList);
+        populateDataOnStart();
     }
-    @PostConstruct
     public void populateDataOnStart() throws IOException {
         InputStream inputStream = Data.class.getResourceAsStream("/data.json");
         if (inputStream == null) {
@@ -49,9 +48,10 @@ public class Data {
         List<Instrumento> dataList = objectMapper.readValue(inputStream,
                 objectMapper.getTypeFactory().constructCollectionType(List.class, Instrumento.class));
         instrumentoService.saveAll(dataList);
+
+        populateUsers();
     }
 
-    @PostConstruct
     public void populateUsers() throws IOException {
         InputStream inputStream = Data.class.getResourceAsStream("/users.json");
         if (inputStream == null) {

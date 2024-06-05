@@ -1,7 +1,14 @@
 import type  Instrumento  from '../entities/Instrumento'; // Import interface
 
-export async function getInstrumentosFetch(){
-	const urlServer = 'http://localhost:8080/api/instrumentos';
+export async function getInstrumentosFetch(email? : string){
+	console.log("en el service", email);
+	
+	let urlServer = 'http://localhost:8080/api/instrumentos';
+
+	if (email) {
+		urlServer += `?email=${email}`;
+	}
+	
 	const response = await fetch(urlServer, {
 		method: 'GET',
         headers: {

@@ -12,5 +12,95 @@
 		"password": "user",
 		"fullName": "User User",
 		"role": "USER"
+	},
+	{
+		"id": null,
+		"fullName": "Juan Pérez",
+		"password": "password123",
+		"email": "juan.perez@example.com",
+		"role": "USER",
+		"pedidos": [
+			{
+				"id": null,
+				"fechaPedido": "12-05-2023",
+				"totalPedido": 150.75,
+				"pedidoDetalles": [
+					{
+						"id": null,
+						"cantidad": 2,
+						"instrumento": {
+							"id": null,
+							"alta": true,
+							"instrumento": "Guitarra",
+							"marca": "Fender",
+							"modelo": "Stratocaster",
+							"imagen": "guitarra.jpg",
+							"precio": "750.00",
+							"costoEnvio": "15.00",
+							"cantidadVendida": 50,
+							"descripcion": "Una guitarra eléctrica clásica.",
+							"categoriaInstrumento": {
+								"id": null,
+								"denominacion": "Cuerdas"
+							}
+						}
+					},
+					{
+						"id": null,
+						"cantidad": 1,
+						"instrumento": {
+							"id":null,
+							"instrumento": "Mandolina Instrumento Musical Stagg Sunburst",
+							"marca": "Stagg",
+							"modelo": "M20",
+							"imagen": "nro10.jpg",
+							"precio": "2450",
+							"costoEnvio": "G",
+							"cantidadVendida": "28",
+							"descripcion": "Estas viendo una excelente mandolina de la marca Stagg, con un sonido muy dulce, tapa aros y fondo de tilo, y diapasón de palisandro. Es un instrumento acústico (no se enchufa) de cuerdas dobles (4 pares) con la caja ovalada y cóncava, y el mástil corto. Su utilización abarca variados ámbitos, desde rock, folk, country y ensambles experimentales.",
+							"categoriaInstrumento": {
+								"id": null,
+								"denominacion": "Cuerda"
+							}
+						}
+					}
+				]
+			}
+		]
+	},
+	{
+		"id": null,
+		"fullName": "María García",
+		"password": "securepassword",
+		"email": "maria.garcia@example.com",
+		"role": "USER",
+		"pedidos": [
+			{
+				"id": null,
+				"fechaPedido": "15-06-2023",
+				"totalPedido": 300.50,
+				"pedidoDetalles": [
+					{
+						"id": null,
+						"cantidad": 3,
+						"instrumento": {
+							"id":null,
+							"instrumento": "Mandolina Instrumento Musical Stagg Sunburst",
+							"marca": "Stagg",
+							"modelo": "M20",
+							"imagen": "nro10.jpg",
+							"precio": "2450",
+							"costoEnvio": "G",
+							"cantidadVendida": "28",
+							"descripcion": "Estas viendo una excelente mandolina de la marca Stagg, con un sonido muy dulce, tapa aros y fondo de tilo, y diapasón de palisandro. Es un instrumento acústico (no se enchufa) de cuerdas dobles (4 pares) con la caja ovalada y cóncava, y el mástil corto. Su utilización abarca variados ámbitos, desde rock, folk, country y ensambles experimentales.",
+							"categoriaInstrumento": {
+								"id": null,
+								"denominacion": "Cuerda"
+							}
+						}
+					}
+				]
+			}
+		]
 	}
 ]

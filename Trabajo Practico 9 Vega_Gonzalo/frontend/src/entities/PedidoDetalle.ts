@@ -1,7 +1,7 @@
 import Instrumento from "./Instrumento";
 
 export interface PedidoDetalle {
-    id : string;
+    id : number;
     cantidad : number;
     instrumento: Instrumento;
 }

@@ -52,7 +52,7 @@ const PublicacionIntrumento = ({ instrumento }: InstrumentoProps) => {
         <div className="card mb-3">
           <div className="row no-gutters">
             <div className="col-md-4  d-flex justify-content-center align-items-center">
-              <img src={instrumento.imagen.includes("www") ? instrumento.imagen : `/img/${instrumento.imagen}`}  className="card-img " style={{ width: "100%", height: "250px", objectFit: "fill" }} />
+              <img src={instrumento.imagen.includes("www") ||  instrumento.imagen.includes("http") ?  instrumento.imagen : `/img/${instrumento.imagen}`}  className="card-img " style={{ width: "100%", height: "250px", objectFit: "fill" }} />
             </div>
             <div className="col-md-8">
               <div className="card-body text-left">

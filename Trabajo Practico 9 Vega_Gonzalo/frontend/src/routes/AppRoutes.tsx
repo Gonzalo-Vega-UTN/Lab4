@@ -8,9 +8,12 @@ import Register from '../pages/Register'
 import { RutaPrivada } from '../components/rutas/RutaPrivada'
 import { Role } from '../entities/Role'
 import RutaProtegida from '../components/rutas/RutaProtegida'
+import SuccessMP from '../pages/SuccessMP'
+import FailureMp from '../pages/FailureMp'
+import { Reportes } from '../pages/Reportes'
 const ListadoPublicacion = lazy(() => import('../components/ListadoPublicacion'));
 const GestionInstrumentos = lazy(() => import('../pages/GestionInstrumentos'));
-const FormInstrumento = lazy(() => import('../components/FormInstrumento'));
+const FormInstrumento = lazy(() => import('../pages/FormInstrumento'));
 const DondeEstamosPage = lazy(() => import('../pages/DondeEstamosPage'));
 
 export const AppRoutes: React.FC = () => {
@@ -32,8 +35,15 @@ export const AppRoutes: React.FC = () => {
           <GestionInstrumentos />
         </RutaProtegida>}></Route>
 
+      <Route path='/reportes' element={
+        <RutaProtegida role={Role.ADMIN}>
+          <Reportes />
+        </RutaProtegida>}></Route>
+
       <Route path='/login' element={<Login />}></Route>
       <Route path='/registro' element={<Register />}></Route>
+      <Route path='/mpsuccess' element={<SuccessMP />}></Route>
+      <Route path='/mpfailure' element={<FailureMp />}></Route>
 
       <Route path='*' element={<Home />}></Route>
 

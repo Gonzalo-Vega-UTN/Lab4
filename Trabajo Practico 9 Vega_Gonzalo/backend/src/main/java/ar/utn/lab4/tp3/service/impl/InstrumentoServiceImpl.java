@@ -1,13 +1,15 @@
 package ar.utn.lab4.tp3.service.impl;
 
 import ar.utn.lab4.tp3.dto.InstrumentoDto;
-import ar.utn.lab4.tp3.dto.request.InstrumentoReqDto;
 import ar.utn.lab4.tp3.exception.NotFoundException;
+import ar.utn.lab4.tp3.exception.UnauthorizedException;
 import ar.utn.lab4.tp3.model.CategoriaInstrumento;
 import ar.utn.lab4.tp3.model.Instrumento;
-import ar.utn.lab4.tp3.repository.ICategoriaRepository;
+import ar.utn.lab4.tp3.model.Role;
 import ar.utn.lab4.tp3.repository.IInstrumentoRepository;
+import ar.utn.lab4.tp3.service.ICategoriaService;
 import ar.utn.lab4.tp3.service.IInstrumentoService;
+import ar.utn.lab4.tp3.service.IUserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +18,14 @@ import java.util.List;
 @Service
 public class InstrumentoServiceImpl implements IInstrumentoService {
     private IInstrumentoRepository instrumentoRepository;
-    private ICategoriaRepository categoriaRepository;
+    private ICategoriaService categoriaService;
+    private IUserService userService;
     private ObjectMapper mapper = new ObjectMapper();
 
-    public InstrumentoServiceImpl(IInstrumentoRepository instrumentoRepository, ICategoriaRepository categoriaRepository) {
+    public InstrumentoServiceImpl(IInstrumentoRepository instrumentoRepository, CategoriaServiceImpl categoriaService, UserServiceImpl userService) {
         this.instrumentoRepository = instrumentoRepository;
-        this.categoriaRepository = categoriaRepository;
+        this.categoriaService = categoriaService;
+        this.userService = userService;
     }
 
     @Override
@@ -31,39 +35,36 @@ public class InstrumentoServiceImpl implements IInstrumentoService {
     }
 
     @Override
-    public List<InstrumentoDto> getAll() {
+    public List<InstrumentoDto> getAll(String email) {
+        if(this.userService.getUser(email).getRole() != Role.ADMIN) throw new UnauthorizedException("No tienes permisos");
         return this.instrumentoRepository.findAll().stream().map(
+                instrumento -> mapper.convertValue(instrumento, InstrumentoDto.class)).toList();
+    }
+
+    @Override
+    public List<InstrumentoDto> getAllAltaTrue() {
+        return this.instrumentoRepository.findByAltaTrue().stream().map(
                 instrumento -> mapper.convertValue(instrumento, InstrumentoDto.class)).toList();
     }
 
     @Override
     public void saveAll(List<Instrumento> instrumentos) {
         for(Instrumento instrumento : instrumentos){
-            CategoriaInstrumento categoriaInstrumento = categoriaRepository.findById(instrumento.getCategoriaInstrumento().getId()).orElse(null);
-            System.out.println(categoriaInstrumento);
+            CategoriaInstrumento categoriaInstrumento = categoriaService.getCategoria(instrumento.getCategoriaInstrumento().getId());
             if (categoriaInstrumento == null){
                 categoriaInstrumento =
                         CategoriaInstrumento.builder().denominacion(instrumento.getCategoriaInstrumento().getDenominacion()).build();
             }
             instrumento.setCategoriaInstrumento(categoriaInstrumento);
-            System.out.println(instrumento);
             this.instrumentoRepository.save(instrumento);
         }
     }
 
-    @Override
-    public void save(InstrumentoReqDto instrumentoReqDto) {
-        System.out.println(instrumentoReqDto);
-        CategoriaInstrumento categoriaInstrumento = categoriaRepository.findById(instrumentoReqDto.getCategoriaInstrumento().getId()).orElse(null);
-        Instrumento instrumento = mapper.convertValue(instrumentoReqDto, Instrumento.class);
-        instrumento.setCategoriaInstrumento(categoriaInstrumento);
-        instrumentoRepository.save(instrumento);
-    }
+
 
     @Override
     public void save(InstrumentoDto instrumentoDto) {
-        System.out.println(instrumentoDto);
-        CategoriaInstrumento categoriaInstrumento = categoriaRepository.findById(instrumentoDto.getCategoriaInstrumento().getId()).orElse(null);
+        CategoriaInstrumento categoriaInstrumento = categoriaService.getCategoria(instrumentoDto.getCategoriaInstrumento().getId());
         Instrumento instrumento = mapper.convertValue(instrumentoDto, Instrumento.class);
         instrumento.setCategoriaInstrumento(categoriaInstrumento);
         instrumentoRepository.save(instrumento);
@@ -77,17 +78,15 @@ public class InstrumentoServiceImpl implements IInstrumentoService {
 
     @Override
     public void delete(Long id) {
-        Instrumento instrumento = this.instrumentoRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("No se encuentra el instrumeto"));
-        instrumento.setCategoriaInstrumento(null);
-        
-        this.instrumentoRepository.delete(instrumento);
+        System.out.println("CAMBIO DE ESTADO");
+        Instrumento instrumento = getInstrumento(id);
+        instrumento.setAlta(!instrumento.isAlta());
+        this.instrumentoRepository.save(instrumento);
     }
 
     @Override
     public Instrumento getInstrumento(Long id) {
-        System.out.println("INSTURMENTO ID " + id);
         return this.instrumentoRepository.findById(id).orElseThrow(()
-                -> new NotFoundException("No se encuentra el instrumeto"));
+                -> new NotFoundException("Instrumento no encontrado"));
     }
 }

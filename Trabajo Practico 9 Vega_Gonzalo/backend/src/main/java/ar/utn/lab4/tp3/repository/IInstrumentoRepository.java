@@ -10,4 +10,6 @@ import java.util.List;
 public interface IInstrumentoRepository extends JpaRepository<Instrumento, Long> {
 
     List<Instrumento> findTop5ByOrderByCantidadVendidaDesc();
+
+    List<Instrumento> findByAltaTrue();
 }

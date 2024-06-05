@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Set;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,6 +14,9 @@ public class Instrumento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    @Builder.Default
+    @Column(columnDefinition = "boolean default true")
+    boolean alta = true;
     String instrumento;
     String marca;
     String modelo;

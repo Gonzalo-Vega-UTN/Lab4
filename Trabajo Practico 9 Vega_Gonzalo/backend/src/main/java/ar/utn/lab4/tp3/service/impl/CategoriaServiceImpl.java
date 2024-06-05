@@ -1,6 +1,7 @@
 package ar.utn.lab4.tp3.service.impl;
 
 import ar.utn.lab4.tp3.dto.CategoriaInstrumentoDto;
+import ar.utn.lab4.tp3.exception.NotFoundException;
 import ar.utn.lab4.tp3.model.CategoriaInstrumento;
 import ar.utn.lab4.tp3.repository.ICategoriaRepository;
 import ar.utn.lab4.tp3.service.ICategoriaService;
@@ -30,11 +31,14 @@ public class CategoriaServiceImpl implements ICategoriaService {
     }
 
     @Override
+    public CategoriaInstrumento getCategoria(Long id) {
+        return this.categoriaRepository.findById(id).orElseThrow(() -> new NotFoundException("Categoría no encontrada"));
+    }
+
+    @Override
     public List<CategoriaInstrumentoDto> getAll() {
         return this.categoriaRepository.findAll().stream().map(
-                categoria ->{
-                    System.out.println(categoria);
-                   return  mapper.convertValue(categoria, CategoriaInstrumentoDto.class);
-                }).toList();
+                categoria ->mapper.convertValue(categoria, CategoriaInstrumentoDto.class)
+                ).toList();
     }
 }

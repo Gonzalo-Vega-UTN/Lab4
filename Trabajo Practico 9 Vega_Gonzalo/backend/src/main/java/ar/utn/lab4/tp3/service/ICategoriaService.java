@@ -9,5 +9,7 @@ public interface ICategoriaService {
     void save(CategoriaInstrumento categoriaInstrumento);
     Boolean saveAll(List<CategoriaInstrumento> instrumentos);
 
+    CategoriaInstrumento getCategoria(Long id);
+
     List<CategoriaInstrumentoDto> getAll();
 }

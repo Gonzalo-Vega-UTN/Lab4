@@ -20,13 +20,12 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody MyUser myUser){
-        System.out.println(myUser);
         return new ResponseEntity<>(userServiceImpl.login(myUser),HttpStatus.OK);
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody MyUser myUser){
-        return new ResponseEntity<>(  userServiceImpl.save(myUser), HttpStatus.OK );
+        return new ResponseEntity<>(userServiceImpl.save(myUser), HttpStatus.OK );
     }
 
     @PostMapping("/admin/{email}")

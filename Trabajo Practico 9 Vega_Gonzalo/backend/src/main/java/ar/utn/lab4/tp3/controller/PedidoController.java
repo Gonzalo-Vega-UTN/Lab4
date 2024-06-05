@@ -34,8 +34,6 @@ public class PedidoController {
 
     @PostMapping("/create-preference-mp")
     public ResponseEntity<?> createPreferenceMP(@RequestBody PedidoReqDto pedido){
-        System.out.println("EN CONTROLER");
-        System.out.println(pedido);
         return ResponseEntity.ok(pedidoService.createPreference(pedido));
     }
 }

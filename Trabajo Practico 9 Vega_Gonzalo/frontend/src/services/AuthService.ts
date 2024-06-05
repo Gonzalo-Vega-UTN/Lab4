@@ -11,8 +11,13 @@ class AuthService {
       },
       mode: "cors"
     });
+    if (!response.ok) {
+      // Lanza un error con la respuesta del servidor si el estado HTTP no es 2xx
+      const errorResponse = await response.json();
+      throw new Error(errorResponse.message);
+  }
 
-    return await response.json() as User;
+  return await response.json() as User;
   }
 
   static async register(user: User) {
@@ -26,7 +31,13 @@ class AuthService {
       mode: "cors"
     });
 
-    return await response.json() as User;
+    if (!response.ok) {
+      // Lanza un error con la respuesta del servidor si el estado HTTP no es 2xx
+      const errorResponse = await response.json();
+      throw new Error(errorResponse.message);
+  }
+
+  return await response.json() as User;
   }
 
   static async modifyRole(admin: User, email: string) {
@@ -40,7 +51,13 @@ class AuthService {
       mode: "cors"
     });
 
-    return await response.json() as User;
+    if (!response.ok) {
+      // Lanza un error con la respuesta del servidor si el estado HTTP no es 2xx
+      const errorResponse = await response.json();
+      throw new Error(errorResponse.message);
+  }
+
+  return await response.json() as User;
   }
 }
 

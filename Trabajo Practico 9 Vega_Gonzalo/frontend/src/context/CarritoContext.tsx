@@ -69,7 +69,13 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const calcularTotalCarrito = () => {
-    const total = cart.reduce((acc, item) => acc + Number(item.instrumento.precio) * Number(item.cantidad), 0);
+    const total = cart.reduce((acc: number, item: PedidoDetalle) => {
+      let subtotal = item.cantidad * Number(item.instrumento.precio);
+      if (item.instrumento.costoEnvio !== "G") {
+        subtotal += Number(item.instrumento.costoEnvio);
+      }
+      return acc + subtotal;
+    }, 0);
     setTotalPedido(total);
   };
 

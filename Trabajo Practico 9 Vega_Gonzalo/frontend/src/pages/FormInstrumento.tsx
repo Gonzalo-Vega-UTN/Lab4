@@ -78,22 +78,7 @@ const FormInstrumento = () => {
             setTxtValidacion("Ingrese el nombre del instrumento");
             return;
         }
-        if (instrumento.precio == undefined || Number(instrumento.precio) < 0) {
-            setTxtValidacion("El precio debe ser mayor o igual a cero");
-            return;
-        }
-        if (instrumento.imagen == undefined || instrumento.imagen === "") {
-            setTxtValidacion("Agregue una imagen");
-            return;
-        }
-        if (instrumento.categoriaInstrumento?.denominacion == undefined || instrumento.categoriaInstrumento?.denominacion === "") {
-            setTxtValidacion("Ingrese el rubro del instrumento");
-            return;
-        }
-        if (instrumento.descripcion == undefined || instrumento.descripcion === "") {
-            setTxtValidacion("Ingrese la descripción del instrumento");
-            return;
-        }
+
         if (instrumento.marca == undefined || instrumento.marca === "") {
             setTxtValidacion("Ingrese la marca");
             return;
@@ -102,11 +87,34 @@ const FormInstrumento = () => {
             setTxtValidacion("Ingrese el modelo");
             return;
         }
-        if (instrumento.cantidadVendida == undefined || Number(instrumento.cantidadVendida) < 0) {
-            setTxtValidacion("Agregue una cantidad vendida mayor o igual a cero");
+
+        if (instrumento.imagen == undefined || instrumento.imagen === "") {
+            setTxtValidacion("Agregue una imagen");
+            return;
+        }
+        if (instrumento.precio == undefined  || instrumento.precio === ""   || Number(instrumento.precio) < 0) {
+            setTxtValidacion("El precio debe ser mayor o igual a cero");
             return;
         }
 
+        if (instrumento.costoEnvio == undefined || instrumento.costoEnvio === "" ) {
+            setTxtValidacion("Ingresar un costo de envio");
+            return;
+        }
+
+        if (instrumento.cantidadVendida == undefined || instrumento.cantidadVendida === "" || Number(instrumento.cantidadVendida) < 0) {
+            setTxtValidacion("Agregue una cantidad vendida mayor o igual a cero");
+            return;
+        }
+        if (instrumento.descripcion == undefined || instrumento.descripcion === "") {
+            setTxtValidacion("Ingrese la descripción del instrumento");
+            return;
+        }
+
+        if (instrumento.categoriaInstrumento?.denominacion == undefined || instrumento.categoriaInstrumento?.denominacion === "") {
+            setTxtValidacion("Ingrese la categoria del instrumento");
+            return;
+        }
 
 
         await saveInstrumento(instrumento);
@@ -173,11 +181,12 @@ const FormInstrumento = () => {
                 <Form.Label>Costo Envio</Form.Label>
                 <Form.Control
                     type="text"
-                    placeholder="costoEnvio"
+                    placeholder="52.25"
                     name="costoEnvio"
                     value={instrumento.costoEnvio}
                     onChange={handleChange}
                 />
+                <span className="text-secondary">Coloque 'G' para envío gratis</span>
             </Form.Group>
 
             <Form.Group controlId="formModelo">
@@ -205,7 +214,7 @@ const FormInstrumento = () => {
 
             <Form.Group controlId="formCategoria">
                 <Form.Label>Categoria</Form.Label>
-                <Form.Control
+                <Form.Select
                     as="select"
                     name="categoriaInstrumento"
                     value={instrumento.categoriaInstrumento?.id}
@@ -217,9 +226,9 @@ const FormInstrumento = () => {
 
                     ))}
                     {/* Agrega más opciones según tu lista de categorías */}
-                </Form.Control>
+                </Form.Select>
             </Form.Group>
-            <h3 className="text-danger">{txtValidacion}</h3>
+            <p className="text-danger">{txtValidacion}</p>
             <Button variant="primary" type="submit">
                 Crear Instrumento
             </Button>

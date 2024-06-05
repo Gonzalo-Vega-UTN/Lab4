@@ -11,10 +11,6 @@ const Header: React.FC = () => {
 
   const usuarioLogueado: User | null = jsonUsuario ? JSON.parse(jsonUsuario) as User : null;
 
-  const handleLogin = () => {
-    navigate("/login");
-  };
-
   const handleLogout = () => {
     logout();
     navigate('/', {
@@ -62,6 +58,15 @@ const Header: React.FC = () => {
           </Nav.Item>
         )}
 
+
+        {isLoggedIn && usuarioLogueado?.role == Role.ADMIN && (
+          <Nav.Item>
+            <Nav.Link as={NavLink} to="/reportes" className="text-light">
+              Reportes
+            </Nav.Link>
+          </Nav.Item>
+        )}
+
       </Nav>
 
       <Nav>
@@ -72,11 +77,18 @@ const Header: React.FC = () => {
               <Button variant='secondary'>Cerrar Sesion</Button>
             </Nav.Link>
           ) : (
-            <Nav.Link onClick={handleLogin} className="text-light">
+            <Nav.Link onClick={() => navigate("/login")} className="text-light">
               <Button variant='primary'>Login</Button>
             </Nav.Link>
           )}
         </Nav.Item>
+        {!isLoggedIn && (
+          <Nav.Item>
+            <Nav.Link onClick={() => navigate("/registro")} className="text-light">
+              <Button variant='primary'>Registrar</Button>
+            </Nav.Link>
+          </Nav.Item>
+        )}
       </Nav>
     </Navbar>
   );
