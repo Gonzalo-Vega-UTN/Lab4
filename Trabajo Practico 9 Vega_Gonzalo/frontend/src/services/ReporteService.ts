@@ -1,6 +1,6 @@
 class ReporteService {
-    static async getDataByMonthPerYear(year: number) {
-        let urlServer = 'http://localhost:8080/api/reportes/bars/year/' + year;
+    static async getDataByMonthPerAnio(anio: number) {
+        let urlServer = 'http://localhost:8080/api/reportes/bars/year/' + anio;
         const response = await fetch(urlServer, {
             method: 'GET',
             headers: {
@@ -10,7 +10,6 @@ class ReporteService {
             mode: 'cors'
         });
         if (!response.ok) {
-            // Lanza un error con la respuesta del servidor si el estado HTTP no es 2xx
             const errorResponse = await response.json();
             throw new Error(errorResponse.message);
         }
@@ -18,7 +17,7 @@ class ReporteService {
         return await response.json() as any[];
     }
 
-    static async getDataPerYear() {
+    static async getDataPerAnio() {
         let urlServer = 'http://localhost:8080/api/reportes/bars';
         const response = await fetch(urlServer, {
             method: 'GET',
@@ -29,7 +28,6 @@ class ReporteService {
             mode: 'cors'
         });
         if (!response.ok) {
-            // Lanza un error con la respuesta del servidor si el estado HTTP no es 2xx
             const errorResponse = await response.json();
             throw new Error(errorResponse.message);
         }
@@ -38,23 +36,61 @@ class ReporteService {
     }
 
     static async generateExcelReport(fechaDesde: string, fechaHasta: string) {
-        const urlServer = `http://localhost:8080/api/reportes/excel?desde=${fechaDesde}&hasta=${fechaHasta}` ; 
+        const urlServer = `http://localhost:8080/api/reportes/excel?desde=${fechaDesde}&hasta=${fechaHasta}`;
+        const response = await fetch(urlServer, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            mode: 'cors'
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al generar el reporte Excel');
+        }
+
+        return response.blob();
+    }
+
+    static async getDataPerInstrumento() {
+        const urlServer = `http://localhost:8080/api/reportes/chart`;
+        const response = await fetch(urlServer, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            mode: 'cors'
+        });
+
+        if (!response.ok) {
+            const errorResponse = await response.json();
+            throw new Error(errorResponse.message);
+        }
+
+        return await response.json() as any[];
+    }
+
+    static async generatePdfReport(idInstrumento: string) {
+        const urlServer = `http://localhost:8080/api/reportes/pdf/${idInstrumento}`;
         const response = await fetch(urlServer, {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/pdf',
             'Access-Control-Allow-Origin': '*'
           },
-          mode: 'cors'
+          mode: "cors"
         });
+        console.log(response);
+        
       
         if (!response.ok) {
-          throw new Error('Error al generar el reporte Excel');
+          throw new Error('Error al generar el reporte PDF');
         }
       
-        // Si la respuesta es exitosa, devuelve los datos del archivo Excel
         return response.blob();
-      }
+    }
 }
 
 export default ReporteService;

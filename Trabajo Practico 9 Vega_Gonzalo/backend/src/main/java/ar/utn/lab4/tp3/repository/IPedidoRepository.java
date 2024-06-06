@@ -24,15 +24,22 @@ public interface IPedidoRepository extends JpaRepository<Pedido, Long> {
 
 
     @Query(nativeQuery = true, value = "SELECT EXTRACT(YEAR FROM FECHA_PEDIDO) AS ANIO,\n" +
-            "       EXTRACT(MONTH FROM FECHA_PEDIDO) AS MES,\n" +
-            "       SUM(CANTIDAD) AS CANTIDAD_INSTRUMENTOS_VENDIDOS\n" +
+            "SUM(CANTIDAD) AS CANTIDAD_INSTRUMENTOS_VENDIDOS\n" +
             "FROM PUBLIC.PEDIDO\n" +
             "JOIN PUBLIC.PEDIDO_DETALLE ON PUBLIC.PEDIDO.ID = PUBLIC.PEDIDO_DETALLE.PEDIDO_ID\n" +
-            "GROUP BY ANIO, MES\n" +
-            "ORDER BY ANIO, MES;")
+            "GROUP BY ANIO\n" +
+            "ORDER BY ANIO;")
     List<Object[]> findCantidadInstrumentosVendidos();
 
     @Query("SELECT p FROM Pedido p WHERE p.fechaPedido BETWEEN :fechaDesde AND :fechaHasta")
     List<Pedido> findPedidosConDetallesByFechaRange(@Param("fechaDesde") LocalDate fechaDesde, @Param("fechaHasta") LocalDate fechaHasta);
+
+    @Query("SELECT i.instrumento AS instrumento,\n" +
+            "       SUM(pd.cantidad) AS cantidad\n" +
+            "FROM Pedido p\n" +
+            "JOIN p.pedidoDetalles pd\n" +
+            "JOIN pd.instrumento i\n" +
+            "GROUP BY i.instrumento\n")
+    List<Object[]> findCantidadPedidosGroupedByInstrumentos();
 
 }

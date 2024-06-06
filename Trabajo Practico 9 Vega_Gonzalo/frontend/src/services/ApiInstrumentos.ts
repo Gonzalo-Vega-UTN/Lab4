@@ -17,6 +17,10 @@ export async function getInstrumentosFetch(email? : string){
 		},
         mode: 'cors'
 	});
+	if (!response.ok) {
+		throw new Error('Error al conseguir Instrumentos');
+	}
+
 	return await response.json() as Instrumento[];
 }
 
@@ -73,6 +77,10 @@ export async function getInstrumentoXIdFetch(id:number){
 		},
         mode: 'cors'
 	});
+
+	if (!response.ok) {
+		throw new Error('Error al conseguir Instrumento');
+	}
 	return await response.json() as Instrumento;
     
 }

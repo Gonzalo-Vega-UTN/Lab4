@@ -28,3 +28,12 @@ export default {
 - Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
 - Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
 - Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+
+
+SELECT EXTRACT(YEAR FROM FECHA_PEDIDO) AS ANIO,
+                   EXTRACT(MONTH FROM FECHA_PEDIDO) AS MES,
+                   SUM(CANTIDAD) AS CANTIDAD_INSTRUMENTOS_VENDIDOS
+            FROM PUBLIC.PEDIDO
+            JOIN PUBLIC.PEDIDO_DETALLE ON PUBLIC.PEDIDO.ID = PUBLIC.PEDIDO_DETALLE.PEDIDO_ID
+            GROUP BY ANIO, MES
+            ORDER BY ANIO, MES;

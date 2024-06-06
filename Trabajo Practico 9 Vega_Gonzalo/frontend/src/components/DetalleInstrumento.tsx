@@ -5,6 +5,8 @@ import { getInstrumentoXIdFetch } from '../services/ApiInstrumentos';
 import { useCarrito } from '../hooks/useCarrito';
 import { Button } from 'react-bootstrap';
 import User from '../entities/User';
+import ReporteService from '../services/ReporteService';
+import { Role } from '../entities/Role';
 
 function DetalleInstrumento() {
   const { idInstrumento } = useParams();
@@ -15,10 +17,16 @@ function DetalleInstrumento() {
 
   const [instrumento, setinstrumento] = useState<Instrumento>();
   const [isComprado, setIsComprado] = useState<boolean>(true);
+  const [errorPdf, setErrorPdf] = useState("");
 
   const getInstrumento = async () => {
-    const instrumentoSelect: Instrumento = await getInstrumentoXIdFetch(Number(idInstrumento));
-    setinstrumento(instrumentoSelect);
+    try {
+      const instrumentoSelect: Instrumento = await getInstrumentoXIdFetch(Number(idInstrumento));
+      setinstrumento(instrumentoSelect);
+
+    } catch (error) {
+      navigate("/error")
+    }
   };
 
   useEffect(() => {
@@ -51,7 +59,7 @@ function DetalleInstrumento() {
 
   const renderImage = () => {
     if (instrumento) {
-      if (instrumento.imagen.includes("www") || instrumento.imagen.includes("http") ) {
+      if (instrumento.imagen.includes("www") || instrumento.imagen.includes("http")) {
         return <img src={instrumento.imagen} className="card-img" alt="Instrumento" />;
       } else {
         return <img src={`/img/${instrumento.imagen}`} className="card-img" alt="Instrumento" />;
@@ -59,6 +67,22 @@ function DetalleInstrumento() {
     }
     return null;
   };
+
+  const handleClickGenerarPdf = async (idInstrumento: string) => {
+    try {
+      const pdfData = await ReporteService.generatePdfReport(idInstrumento);
+      const blob = new Blob([pdfData], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      window.open(url);
+    } catch (error) {
+      console.error('Error al generar el Excel:', error);
+      if (error instanceof Error) {
+        setErrorPdf(error.message);
+      } else {
+        setErrorPdf('Hubo un error');
+      }
+    }
+  }
 
   return (
     <div className="container pt-5">
@@ -99,6 +123,9 @@ function DetalleInstrumento() {
             </div>
           )}
         </div>
+        {userLogueado && userLogueado.role === Role.ADMIN && instrumento &&
+          <Button className='mt-5' size='lg' variant="success" href="#" onClick={() => handleClickGenerarPdf(instrumento.id)}>Generar PDF</Button>}
+        {errorPdf && <p>{errorPdf}</p>}
       </div>
     </div>
   );

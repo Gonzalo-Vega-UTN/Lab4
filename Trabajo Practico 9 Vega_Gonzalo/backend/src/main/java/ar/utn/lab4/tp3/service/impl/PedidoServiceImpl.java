@@ -188,4 +188,12 @@ public class PedidoServiceImpl implements IPedidoService {
     public List<Pedido> obtenerPedidosPorFecha(LocalDate desde, LocalDate hasta) {
         return this.pedidoRepository.findPedidosConDetallesByFechaRange(desde, hasta);
     }
+
+    public  List<Object[]> obtenerPedidosPorInstrumento() {
+        Object[] encabezado = {"Instrumento", "Cantidad Vendida"};
+        List<Object[]> listado = new ArrayList<>();
+        listado.add(encabezado);
+        listado.addAll(this.pedidoRepository.findCantidadPedidosGroupedByInstrumentos());
+        return listado;
+    }
 }

@@ -34,6 +34,13 @@ const GestionInstrumentos = () => {
       navigate(`/instrumento-form/${id}`);
     }
   };
+  const handleClickDetalle = (id: string): void => {
+    if (isNaN(Number(id))) {
+      navigate('/error');
+    } else {
+      navigate(`/detalle/${id}`);
+    }
+  };
   const [showConfirmationAlertId, setShowConfirmationAlertId] = useState<string | null>(null);
 
   const handleClickEliminar = (id: string): void => {
@@ -104,6 +111,7 @@ const GestionInstrumentos = () => {
             <th scope="col">Modelo</th>
             <th scope="col">Marca</th>
             <th scope="col">Precio</th>
+            <th scope="col">Detalle</th>
             <th scope="col">Modificar</th>
             <th scope="col">Eliminar</th>
           </tr>
@@ -116,6 +124,7 @@ const GestionInstrumentos = () => {
               <td>{instrumento.modelo}</td>
               <td>{instrumento.marca}</td>
               <td>{instrumento.precio}</td>
+              <td><Button variant="info" onClick={() => handleClickDetalle(instrumento.id)}>Detalle</Button></td>
               <td><Button onClick={() => handleClickModificar(instrumento.id)}>Modificar</Button></td>
               <td>
                 <Button

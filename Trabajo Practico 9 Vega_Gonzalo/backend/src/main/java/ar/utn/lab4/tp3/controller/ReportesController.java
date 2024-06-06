@@ -43,38 +43,23 @@ public class ReportesController {
         }
     }
 
-//    @GetMapping("/pdf/{instrumentoId}")
-//    public ResponseEntity<byte[]> generatePdfReport(@PathVariable Long instrumentoId) {
-//        try {
-//            Optional<Instrumento> optionalInstrumento = instrumentoService.buscarXid(instrumentoId);
-//            if (optionalInstrumento.isPresent()) {
-//                Instrumento instrumento = optionalInstrumento.get();
-//                ByteArrayOutputStream pdfStream = ReportGenerator.generateInstrumentoPDF(instrumento);
-//
-//                byte[] pdfBytes = pdfStream.toByteArray();
-//
-//                HttpHeaders headers = new HttpHeaders();
-//                headers.setContentType(MediaType.APPLICATION_PDF);
-//                headers.setContentDispositionFormData("attachment", "detalle_instrumento.pdf");
-//                headers.setContentLength(pdfBytes.length);
-//
-//                return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
-//            } else {
-//                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+    @GetMapping("/pdf/{idInstrumento}")
+    public ResponseEntity<byte[]> generarReportePdf(@PathVariable Long idInstrumento) {
+        return this.reporteService.generarPdf(idInstrumento);
+    }
 
     @GetMapping("/bars/year/{year}")
-    public List<List<Object>> obtenerGraficoBarraPorMeses(@PathVariable Integer year) {
+    public List<Object[]> obtenerGraficoBarraPorMeses(@PathVariable Integer year) {
         return reporteService.obtenerCantidadPedidosPorMeses(year);
     }
 
     @GetMapping("/bars")
-    public List<List<Object>> obtenerGraficoBarraPorAnios() {
+    public List<Object[]> obtenerGraficoBarraPorAnios() {
         return reporteService.obtenerCantidadPedidos();
+    }
+
+    @GetMapping("/chart")
+    public List<Object[]> obtenerGraficoChartPorInstrumentos() {
+        return reporteService.obtenerPedidosAgrupadosPorInstrumento();
     }
 }

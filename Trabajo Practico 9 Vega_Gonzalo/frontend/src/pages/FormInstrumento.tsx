@@ -19,6 +19,7 @@ const FormInstrumento = () => {
     const [instrumento, setInstrumento] = useState<Instrumento>({
         id: "",
         instrumento: "",
+        alta: true,
         marca: "",
         modelo: "",
         imagen: "",

@@ -59,6 +59,12 @@ INSERT INTO PUBLIC.INSTRUMENTO
 VALUES 
 (TRUE, 380, 3, 'Batería Musical Infantil Juguete Niño 9 Piezas Palillos ', 'DESCRIPCIÓN: DE 1 A 3 AÑOS. EL SET INCLUYE 5 TAMBORES, PALILLOS Y EL PLATILLO TAL CUAL LAS FOTOS. SONIDOS REALISTAS Y FÁCIL DE MONTAR. MEDIDAS: 40X20X46 CM', 'nro5.jpg', 'Bateria', 'Infantil', '250', '850');
 
+INSERT INTO PUBLIC.INSTRUMENTO
+(ALTA, CANTIDAD_VENDIDA, CATEGORIA_INSTRUMENTO,	INSTRUMENTO, DESCRIPCION, IMAGEN, MARCA, MODELO, COSTO_ENVIO, PRECIO)
+VALUES
+(TRUE, 28, 1, 'Prueba' ,'Prueba',
+ 'https://acentocoop.es/wp-content/uploads/2020/09/nombres-de-instrumento-musicales.jpg', 'Prueba', 'Prueba', 'G', '245000.00');
+
 INSERT INTO PUBLIC.MY_USER (EMAIL, FULL_NAME, PASSWORD, ROLE) VALUES ('user1@example.com', 'John Doe', 'password123', 'USER');
 INSERT INTO PUBLIC.MY_USER (EMAIL, FULL_NAME, PASSWORD, ROLE) VALUES ('user2@example.com', 'Jane Smith', 'password456', 'USER');
 INSERT INTO PUBLIC.MY_USER (EMAIL, FULL_NAME, PASSWORD, ROLE) VALUES ('admin@admin.com', 'Admin Admin', 'admin', 'ADMIN');

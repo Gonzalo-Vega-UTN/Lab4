@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ar.utn.lab4.tp3.exception.NotFoundException;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @Service
@@ -23,7 +25,8 @@ public class UserServiceImpl implements IUserService {
 
     public MyUser login(MyUser myUser) {
         MyUser existingUser = this.getUser(myUser.getEmail());
-        if(existingUser.getPassword().equals(myUser.getPassword())){
+        String hashedClave = encriptarClaveSHA256(myUser.getPassword());
+        if(existingUser.getPassword().equals(hashedClave)){
             return existingUser;
         }else{
             throw new UnauthorizedException("Password Invalida");
@@ -35,8 +38,23 @@ public class UserServiceImpl implements IUserService {
             log.info("[INFO] Email Duplicado {}",myUser.getEmail());
            throw new DuplicatedException("El email ya ha sido registrado");
         }
+        myUser.setPassword(encriptarClaveSHA256(myUser.getPassword()));
         myUser.setRole(Role.USER);
         return this.userRepository.save(myUser);
+    }
+
+    public static String encriptarClaveSHA256(String clave) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] array = md.digest(clave.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : array) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
